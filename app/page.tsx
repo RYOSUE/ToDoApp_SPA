@@ -24,10 +24,10 @@ export default function TodoApp() {
     setTodoText(e.target.value);
   };
 
-// コンテンツ入力フィールドの変更を処理
+  // コンテンツ入力フィールドの変更を処理
   const handleContentChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-  setTodoContent(e.target.value);
-};
+    setTodoContent(e.target.value);
+  };
 
   // 締め切りの変更を処理
   const handleDeadlineChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -77,85 +77,121 @@ export default function TodoApp() {
   };
 
   return (
-    <main className="max-w-xl mx-auto p-4">
-      <button className="btn btn-primary">押してくれ</button>
-      <div className="input-area list-row mb-4 flex gap-2">
-        <input
-          type="text"
-          placeholder="Enter Todo"
-          value={todoText}
-          onChange={handleTextChange}
-          className="border rounded px-2 py-1 flex-1"
-        />
-        <textarea
-          placeholder="Content"
-          value={todoContent}
-          onChange={handleContentChange}
-          className="border rounded px-2 py-1 flex-1"
-        />
-        <input
-          type="date"
-          value={todoDeadline.toISOString().slice(0, 10)}
-          onChange={handleDeadlineChange}
-          className="border rounded px-2 py-1"
-        />
-        <label className="flex items-center gap-1">
+    <main className="container mx-auto p-4">
+      <div className="">
+        <div className=" mb-3 form-floating">
           <input
-            type="checkbox"
-            checked={false}
-            disabled
-            className="accent-blue-500"
+            type="text"
+            placeholder="Todo"
+            value={todoText}
+            onChange={handleTextChange}
+            className="form-control"
+            required
+            autoFocus
           />
-          完了
-        </label>
-        <button onClick={handleAdd} className="bg-blue-500 text-white px-4 py-1 rounded">登録</button>
+          <label htmlFor="floatingInput">Enter Todo</label>
+        </div>
+        <div className="mb-3 form-floating">
+          <textarea
+            placeholder="Content"
+            value={todoContent}
+            onChange={handleContentChange}
+            className="form-control"
+            style={{ height: "100px" }}
+          />
+          <label htmlFor="floatingInput">Enter Content</label>
+        </div>
+        <div className="mb-3 form-floating">
+          <input
+            type="date"
+            value={todoDeadline.toISOString().slice(0, 10)}
+            onChange={handleDeadlineChange}
+            className="form-control"
+          />
+          <label htmlFor="floatingInput">Deadline</label>
+        </div>
+        <button onClick={handleAdd} className="btn btn-primary mb-3">登録</button>
+        <hr />
       </div>
       <section className="incomplete-area mb-8">
-        <p className="title font-bold mb-2">Yet Todo</p>
-        <div className="grid grid-cols-5 gap-2 font-bold border-b pb-1 mb-2">
-          <span>ToDo</span>
-          <span>内容</span>
-          <span>締切</span>
-          <span>完了</span>
-          <span>操作</span>
+        <p className="title font-bold mb-2">未完了のToDo</p>
+        <div className="container text-center">
+          <div className="row">
+            <div className="col">
+              ToDo
+            </div>
+            <div className="col">
+              内容
+            </div>
+            <div className="col">
+              締切
+            </div>
+            <div className="col">
+              操作ボタン
+            </div>
+          </div>
         </div>
         <ul className="space-y-2">
           {incompleteTodos.map((todo) => (
             <li key={todo.id}>
-              <div className="grid grid-cols-5 gap-2 items-center">
-                <span className="font-bold">{todo.text}</span>
-                <span>{todo.content}</span>
-                <span>{todo.deadline.toLocaleDateString()}</span>
-                <span>{todo.completed ? "済" : "未"}</span>
-                <span className="flex gap-2">
-                  <button onClick={() => handleComplete(todo.id)} className="bg-green-500 text-white px-2 py-1 rounded">完了</button>
-                  <button onClick={() => handleDelete(todo.id)} className="bg-red-500 text-white px-2 py-1 rounded">削除</button>
-                </span>
+              <div className="container text-center">
+                <div className="row">
+                  <div className="col">
+                    {todo.text}
+                  </div>
+                  <div className="col">
+                    {todo.content}
+                  </div>
+                  <div className="col">
+                    {todo.deadline.toLocaleDateString()}
+                  </div>
+                  <div className="col">
+                    <button onClick={() => handleComplete(todo.id)} className="btn btn-success">完了</button>
+                    <button onClick={() => handleDelete(todo.id)} className="btn btn-danger">削除</button>
+                  </div>
+                </div>
               </div>
             </li>
           ))}
         </ul>
       </section>
       <section className="complete-area">
-        <p className="title font-bold mb-2">Done Todo</p>
-        <div className="grid grid-cols-5 gap-2 font-bold border-b pb-1 mb-2">
-          <span>ToDo</span>
-          <span>内容</span>
-          <span>締切</span>
-          <span>完了</span>
-          <span>操作</span>
+        <hr />
+        <p className="title font-bold mb-2">完了したTodo</p>
+        <div className="container text-center">
+          <div className="row">
+            <div className="col">
+              ToDo
+            </div>
+            <div className="col">
+              内容
+            </div>
+            <div className="col">
+              締切
+            </div>
+            <div className="col">
+              操作ボタン
+            </div>
+          </div>
         </div>
         <ul className="space-y-2">
           {completeTodos.map((todo) => (
             <li key={todo.id}>
-              <div className="grid grid-cols-5 gap-2 items-center">
-                <span className="font-bold">{todo.text}</span>
-                <span>{todo.content}</span>
-                <span>{todo.deadline.toLocaleDateString()}</span>
-                <span>{todo.completed ? "済" : "未"}</span>
-                <span>
-                  <button onClick={() => handleRebase(todo.id)} className="bg-yellow-500 text-white px-2 py-1 rounded">戻す</button>
-                </span>
+              <div className="container text-center">
+                <div className="row">
+                  <div className="col">
+                    {todo.text}
+                  </div>
+                  <div className="col">
+                    {todo.content}
+                  </div>
+                  <div className="col">
+                    {todo.deadline.toLocaleDateString()}
+                  </div>
+                  <div className="col">
+                    <button onClick={() => handleRebase(todo.id)} className="btn btn-info text-white">戻す</button>
+                  </div>
+                </div>
               </div>
             </li>
           ))}
