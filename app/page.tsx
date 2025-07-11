@@ -1,6 +1,9 @@
 "use client";
 
 import { useState, ChangeEvent } from "react";
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
 // Todo型を定義
 interface Todo {
