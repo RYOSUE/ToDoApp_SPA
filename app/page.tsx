@@ -78,6 +78,7 @@ export default function TodoApp() {
 
   return (
     <main className="max-w-xl mx-auto p-4">
+      <button className="btn btn-primary">押してくれ</button>
       <div className="input-area list-row mb-4 flex gap-2">
         <input
           type="text"
