@@ -9,7 +9,7 @@
 - TypeScript
 - React
 - Next.js
-- Tailwind CSS
+- Bootstrap CSS
 - Jest（テスト）
 - MySQL（データベース）
 
