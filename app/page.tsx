@@ -11,18 +11,21 @@ export default function Page() {
         <>
             <div className="text-center my-4">
                 <h1>ToDoApp_SPAへようこそ</h1>
-
-                <Button
-                    onClick={() => router.push('/todolist')}
-                    variant='dark' className='my-3' size='lg'>
-                    ログイン
-                </Button>
-                <Button
-                    onClick={() => router.push('/todolist')}
-                    variant='dark' className='my-3' size='lg'>
-                    新規アカウント登録
-                </Button>
-            </div>
+                <div>
+                    <Button
+                        onClick={() => router.push('/todolist')}
+                        variant='dark' className='m-2' size='lg'>
+                        ログイン
+                    </Button>
+                </div>
+                <div>
+                    <Button
+                        onClick={() => router.push('/todolist')}
+                        variant='dark' size='lg'>
+                        新規アカウント登録
+                    </Button>
+                </div>
+            </div >
         </>
     )
 }
