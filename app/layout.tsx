@@ -1,4 +1,5 @@
 import NavbarSPA from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 export default function RootLayout({
   children,
@@ -10,6 +11,7 @@ export default function RootLayout({
       <body>
         <NavbarSPA />
         {children}
+        <Footer />
       </body>
     </html>
   );
