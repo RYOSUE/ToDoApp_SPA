@@ -85,7 +85,11 @@ export default function TodoApp() {
   return (
     <>
       <Container className="mx-auto p-4">
+        <h1 className="mb-4">ToDoリスト</h1>
+        <p className=" lead text-muted mb-4">以下の登録フォームから新しいToDoを追加してください</p>
+        <hr />  
         <div>
+          <h3>登録フォーム</h3>
           <FloatingLabel controlId="floatingInput" label="Todo" className="mb-3">
             <Form.Control
               type="text"
