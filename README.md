@@ -9,7 +9,7 @@
 - TypeScript
 - React
 - Next.js
-- Bootstrap CSS
+- Bootstrap/React Bootstrap: CSS
 - Jest（テスト）
 - MySQL（データベース）
 
