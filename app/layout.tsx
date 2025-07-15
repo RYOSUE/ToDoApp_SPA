@@ -8,7 +8,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja">
-      <body>
+      <body style={{ paddingBottom: '60px' }}>
+        {/* paddingBottom: footerとpage.tsxがかぶらないように */}
         <NavbarSPA />
         {children}
         <Footer />
