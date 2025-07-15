@@ -15,7 +15,7 @@ interface Todo {
   title: string;
   content: string;
   completed: boolean;
-  deadline: Date;
+  deadline: Date | null; // nullを許容
 }
 
 export default function TodoApp() {
@@ -32,12 +32,12 @@ export default function TodoApp() {
       const res = await fetch('/api/todos');
       const todos = await res.json();
       const todoArray = Array.isArray(todos) ? todos : [];
-      const mappedTodos = todoArray.map((t: any) => ({
+      const mappedTodos = todoArray.map((t: Todo) => ({
         ...t,
         deadline: t.deadline ? new Date(t.deadline) : null,
       }));
-      setIncompleteTodos(mappedTodos.filter((t: any) => !t.completed));
-      setCompleteTodos(mappedTodos.filter((t: any) => t.completed));
+      setIncompleteTodos(mappedTodos.filter((t: Todo) => !t.completed));
+      setCompleteTodos(mappedTodos.filter((t: Todo) => t.completed));
     };
     fetchTodos();
   }, []);
@@ -97,12 +97,12 @@ export default function TodoApp() {
     const res = await fetch('/api/todos');
     const todos = await res.json();
     const todoArray = Array.isArray(todos) ? todos : [];
-    const mappedTodos = todoArray.map((t: any) => ({
+    const mappedTodos = todoArray.map((t: Todo) => ({
       ...t,
       deadline: t.deadline ? new Date(t.deadline) : null,
     }));
-    setIncompleteTodos(mappedTodos.filter((t: any) => !t.completed));
-    setCompleteTodos(mappedTodos.filter((t: any) => t.completed));
+    setIncompleteTodos(mappedTodos.filter((t: Todo) => !t.completed));
+    setCompleteTodos(mappedTodos.filter((t: Todo) => t.completed));
   };
 
   // 削除ボタンのクリックを処理
@@ -121,12 +121,12 @@ export default function TodoApp() {
     const res = await fetch('/api/todos');
     const todos = await res.json();
     const todoArray = Array.isArray(todos) ? todos : [];
-    const mappedTodos = todoArray.map((t: any) => ({
+    const mappedTodos = todoArray.map((t: Todo) => ({
       ...t,
       deadline: t.deadline ? new Date(t.deadline) : null,
     }));
-    setIncompleteTodos(mappedTodos.filter((t: any) => !t.completed));
-    setCompleteTodos(mappedTodos.filter((t: any) => t.completed));
+    setIncompleteTodos(mappedTodos.filter((t: Todo) => !t.completed));
+    setCompleteTodos(mappedTodos.filter((t: Todo) => t.completed));
   };
 
   // 完了ボタンのクリックを処理
@@ -148,19 +148,19 @@ export default function TodoApp() {
       body: JSON.stringify({
         ...todo,
         completed: true,
-        deadline: todo.deadline.toISOString().slice(0, 10),
+        deadline: todo.deadline ? todo.deadline.toISOString().slice(0, 10) : null,
       }),
     });
     // 再取得
     const res = await fetch('/api/todos');
     const todos = await res.json();
     const todoArray = Array.isArray(todos) ? todos : [];
-    const mappedTodos = todoArray.map((t: any) => ({
+    const mappedTodos = todoArray.map((t: Todo) => ({
       ...t,
       deadline: t.deadline ? new Date(t.deadline) : null,
     }));
-    setIncompleteTodos(mappedTodos.filter((t: any) => !t.completed));
-    setCompleteTodos(mappedTodos.filter((t: any) => t.completed));
+    setIncompleteTodos(mappedTodos.filter((t: Todo) => !t.completed));
+    setCompleteTodos(mappedTodos.filter((t: Todo) => t.completed));
   };
 
   // 完了したToDoを未完了に戻す処理
@@ -179,19 +179,19 @@ export default function TodoApp() {
       body: JSON.stringify({
         ...todo,
         completed: false,
-        deadline: todo.deadline.toISOString().slice(0, 10),
+        deadline: todo.deadline ? todo.deadline.toISOString().slice(0, 10) : null,
       }),
     });
     // 再取得
     const res = await fetch('/api/todos');
     const todos = await res.json();
     const todoArray = Array.isArray(todos) ? todos : [];
-    const mappedTodos = todoArray.map((t: any) => ({
+    const mappedTodos = todoArray.map((t: Todo) => ({
       ...t,
       deadline: t.deadline ? new Date(t.deadline) : null,
     }));
-    setIncompleteTodos(mappedTodos.filter((t: any) => !t.completed));
-    setCompleteTodos(mappedTodos.filter((t: any) => t.completed));
+    setIncompleteTodos(mappedTodos.filter((t: Todo) => !t.completed));
+    setCompleteTodos(mappedTodos.filter((t: Todo) => t.completed));
   };
 
   return (
@@ -248,7 +248,7 @@ export default function TodoApp() {
                 <Row>
                   <Col>{todo.title}</Col>
                   <Col>{todo.content}</Col>
-                  <Col>{todo.deadline.toLocaleDateString()}</Col>
+                  <Col>{todo.deadline ? todo.deadline.toLocaleDateString(): null}</Col>
                   <Col>
                     <Button onClick={() => handleComplete(todo.id)} variant="success" size="sm">完了</Button>
                     <Button onClick={() => handleDelete(todo.id)} variant="danger" size="sm">削除</Button>
@@ -276,7 +276,7 @@ export default function TodoApp() {
                   <Row>
                     <Col>{todo.title}</Col>
                     <Col>{todo.content}</Col>
-                    <Col>{todo.deadline.toLocaleDateString()}</Col>
+                    <Col>{todo.deadline ? todo.deadline.toLocaleDateString(): null}</Col>
                     <Col>
                       <Button onClick={() => handleRebase(todo.id)} variant="info" size="sm">戻す</Button>
                     </Col>
