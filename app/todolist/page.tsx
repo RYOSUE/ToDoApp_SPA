@@ -1,33 +1,50 @@
 "use client";
 
-import { useState, ChangeEvent } from "react";
+import { useEffect, useState, ChangeEvent } from "react";
 import Container from 'react-bootstrap/Container';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+// import { todo } from "node:test";
 
 // Todo型を定義
 interface Todo {
   id: number;
-  text: string;
+  title: string;
   content: string;
   completed: boolean;
   deadline: Date;
 }
 
 export default function TodoApp() {
-  const [todoText, setTodoText] = useState("");
+  const [todoTitle, setTodoTitle] = useState("");
   const [todoContent, setTodoContent] = useState("");
   const [todoDeadline, setTodoDeadline] = useState<Date>(new Date());
   const [incompleteTodos, setIncompleteTodos] = useState<Todo[]>([]);
   const [completeTodos, setCompleteTodos] = useState<Todo[]>([]);
-  const [nextId, setNextId] = useState(1);
+  // const [nextId, setNextId] = useState(1);
+
+  // 初期データの取得
+  useEffect(() => {
+    const fetchTodos = async () => {
+      const res = await fetch('/api/todos');
+      const todos = await res.json();
+      const todoArray = Array.isArray(todos) ? todos : [];
+      const mappedTodos = todoArray.map((t: any) => ({
+        ...t,
+        deadline: t.deadline ? new Date(t.deadline) : null,
+      }));
+      setIncompleteTodos(mappedTodos.filter((t: any) => !t.completed));
+      setCompleteTodos(mappedTodos.filter((t: any) => t.completed));
+    };
+    fetchTodos();
+  }, []);
 
   // 入力フィールドの変更を処理
   const handleTextChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setTodoText(e.target.value);
+    setTodoTitle(e.target.value);
   };
 
   // コンテンツ入力フィールドの変更を処理
@@ -41,45 +58,140 @@ export default function TodoApp() {
   };
 
   // 登録ボタンのクリックを処理
-  const handleAdd = () => {
-    if (!todoText.trim()) return;
-    setIncompleteTodos([
-      ...incompleteTodos,
-      {
-        id: nextId,
-        text: todoText,
+  // const handleAdd = () => {
+  //   if (!todoTitle.trim()) return;
+  //   setIncompleteTodos([
+  //     ...incompleteTodos,
+  //     {
+  //       id: nextId,
+  //       text: todoTitle,
+  //       content: todoContent,
+  //       completed: false,
+  //       deadline: todoDeadline,
+  //     },
+  //   ]);
+  //   // 入力フィールドのリセット
+  //   setNextId(nextId + 1);
+  //   setTodoTitle("");
+  //   setTodoContent("");
+  //   setTodoDeadline(new Date());
+  // };
+  const handleAdd = async () => {
+    if (!todoTitle.trim()) return;  // 空のToDoは登録しない
+    await fetch('/api/todos', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        title: todoTitle,
         content: todoContent,
         completed: false,
-        deadline: todoDeadline,
-      },
-    ]);
-    // 入力フィールドのリセット
-    setNextId(nextId + 1);
-    setTodoText("");
+        deadline: todoDeadline.toISOString().slice(0, 10), // YYYY-MM-DD形式で送信
+      }),
+    })
+    setTodoTitle("");
     setTodoContent("");
     setTodoDeadline(new Date());
+    // ToDoリストを再取得
+    const res = await fetch('/api/todos');
+    const todos = await res.json();
+    const todoArray = Array.isArray(todos) ? todos : [];
+    const mappedTodos = todoArray.map((t: any) => ({
+      ...t,
+      deadline: t.deadline ? new Date(t.deadline) : null,
+    }));
+    setIncompleteTodos(mappedTodos.filter((t: any) => !t.completed));
+    setCompleteTodos(mappedTodos.filter((t: any) => t.completed));
   };
 
   // 削除ボタンのクリックを処理
-  const handleDelete = (id: number) => {
-    setIncompleteTodos(incompleteTodos.filter((todo) => todo.id !== id));
+  // const handleDelete = (id: number) => {
+  //   setIncompleteTodos(incompleteTodos.filter((todo) => todo.id !== id));
+  // };
+  const handleDelete = async (id: number) => {
+    await fetch(`/api/todos/`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id }),
+    });
+    // ToDoリストを再取得
+    const res = await fetch('/api/todos');
+    const todos = await res.json();
+    const todoArray = Array.isArray(todos) ? todos : [];
+    const mappedTodos = todoArray.map((t: any) => ({
+      ...t,
+      deadline: t.deadline ? new Date(t.deadline) : null,
+    }));
+    setIncompleteTodos(mappedTodos.filter((t: any) => !t.completed));
+    setCompleteTodos(mappedTodos.filter((t: any) => t.completed));
   };
 
-  const handleComplete = (id: number) => {
+  // 完了ボタンのクリックを処理
+  // const handleComplete = (id: number) => {
+  //   const todo = incompleteTodos.find((t) => t.id === id);
+  //   if (!todo) return;
+  //   setIncompleteTodos(incompleteTodos.filter((t) => t.id !== id));
+  //   setCompleteTodos([
+  //     ...completeTodos,
+  //     { ...todo, completed: true },
+  //   ]);
+  // };
+  const handleComplete = async (id: number) => {
     const todo = incompleteTodos.find((t) => t.id === id);
     if (!todo) return;
-    setIncompleteTodos(incompleteTodos.filter((t) => t.id !== id));
-    setCompleteTodos([
-      ...completeTodos,
-      { ...todo, completed: true },
-    ]);
+    await fetch('/api/todos', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...todo,
+        completed: true,
+        deadline: todo.deadline.toISOString().slice(0, 10),
+      }),
+    });
+    // 再取得
+    const res = await fetch('/api/todos');
+    const todos = await res.json();
+    const todoArray = Array.isArray(todos) ? todos : [];
+    const mappedTodos = todoArray.map((t: any) => ({
+      ...t,
+      deadline: t.deadline ? new Date(t.deadline) : null,
+    }));
+    setIncompleteTodos(mappedTodos.filter((t: any) => !t.completed));
+    setCompleteTodos(mappedTodos.filter((t: any) => t.completed));
   };
 
-  const handleRebase = (id: number) => {
+  // 完了したToDoを未完了に戻す処理
+  // const handleRebase = (id: number) => {
+  //   const todo = completeTodos.find((t) => t.id === id);
+  //   if (!todo) return;
+  //   setCompleteTodos(completeTodos.filter((t) => t.id !== id));
+  //   setIncompleteTodos([...incompleteTodos, todo]);
+  // };
+  const handleRebase = async (id: number) => {
     const todo = completeTodos.find((t) => t.id === id);
     if (!todo) return;
-    setCompleteTodos(completeTodos.filter((t) => t.id !== id));
-    setIncompleteTodos([...incompleteTodos, todo]);
+    await fetch('/api/todos', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...todo,
+        completed: false,
+        deadline: todo.deadline.toISOString().slice(0, 10),
+      }),
+    });
+    // 再取得
+    const res = await fetch('/api/todos');
+    const todos = await res.json();
+    const todoArray = Array.isArray(todos) ? todos : [];
+    const mappedTodos = todoArray.map((t: any) => ({
+      ...t,
+      deadline: t.deadline ? new Date(t.deadline) : null,
+    }));
+    setIncompleteTodos(mappedTodos.filter((t: any) => !t.completed));
+    setCompleteTodos(mappedTodos.filter((t: any) => t.completed));
   };
 
   return (
@@ -87,14 +199,14 @@ export default function TodoApp() {
       <Container className="mx-auto p-4">
         <h1 className="mb-4">ToDoリスト</h1>
         <p className=" lead text-muted mb-4">以下の登録フォームから新しいToDoを追加してください</p>
-        <hr />  
+        <hr />
         <div>
           <h3>登録フォーム</h3>
           <FloatingLabel controlId="floatingInput" label="Todo" className="mb-3">
             <Form.Control
               type="text"
               placeholder="Todo"
-              value={todoText}
+              value={todoTitle}
               onChange={handleTextChange}
               required
               autoFocus />
@@ -134,7 +246,7 @@ export default function TodoApp() {
             <li key={todo.id}>
               <Container className="text-center mb-2">
                 <Row>
-                  <Col>{todo.text}</Col>
+                  <Col>{todo.title}</Col>
                   <Col>{todo.content}</Col>
                   <Col>{todo.deadline.toLocaleDateString()}</Col>
                   <Col>
@@ -162,7 +274,7 @@ export default function TodoApp() {
               <li key={todo.id}>
                 <Container className="text-center mb-2">
                   <Row>
-                    <Col>{todo.text}</Col>
+                    <Col>{todo.title}</Col>
                     <Col>{todo.content}</Col>
                     <Col>{todo.deadline.toLocaleDateString()}</Col>
                     <Col>
