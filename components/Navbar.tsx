@@ -37,8 +37,9 @@ function NavbarSPA() {
                     placeholder="Search"
                     className="me-2"
                     aria-label="Search"
+                    disabled
                   />
-                  <Button variant="outline-success">Search</Button>
+                  <Button variant="outline-success" disabled>Search</Button>
                 </Form>
               </Offcanvas.Body>
             </Navbar.Offcanvas>
