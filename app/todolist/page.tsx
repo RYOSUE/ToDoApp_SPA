@@ -17,6 +17,12 @@ interface Todo {
   deadline: Date | null; // nullを許容
 }
 
+// JSTのYYYY-MM-DD文字列を返す関数
+function toJSTISOString(date: Date): string {
+  const jstDate = new Date(date.getTime() + 3600000 * 9);
+  return jstDate.toISOString().slice(0, 10);
+}
+
 export default function TodoApp() {
   const [todoTitle, setTodoTitle] = useState("");
   const [todoContent, setTodoContent] = useState("");
@@ -66,7 +72,7 @@ export default function TodoApp() {
         title: todoTitle,
         content: todoContent,
         completed: false,
-        deadline: todoDeadline.toISOString().slice(0, 10), // YYYY-MM-DD形式で送信
+        deadline: toJSTISOString(todoDeadline), // JSTで送信
       }),
     })
     setTodoTitle("");
@@ -115,7 +121,7 @@ export default function TodoApp() {
       body: JSON.stringify({
         ...todo,
         completed: true,
-        deadline: todo.deadline ? todo.deadline.toISOString().slice(0, 10) : null,
+        deadline: todo.deadline ? toJSTISOString(todo.deadline) : null,
       }),
     });
     // 再取得
@@ -140,7 +146,7 @@ export default function TodoApp() {
       body: JSON.stringify({
         ...todo,
         completed: false,
-        deadline: todo.deadline ? todo.deadline.toISOString().slice(0, 10) : null,
+        deadline: todo.deadline ? toJSTISOString(todo.deadline) : null,
       }),
     });
     // 再取得
@@ -184,7 +190,7 @@ export default function TodoApp() {
           <FloatingLabel controlId="floatingDate" label="Deadline" className="mb-3">
             <Form.Control
               type="date"
-              value={todoDeadline.toISOString().slice(0, 10)}
+              value={toJSTISOString(todoDeadline)}
               onChange={handleDeadlineChange}
             />
           </FloatingLabel>
@@ -209,7 +215,7 @@ export default function TodoApp() {
                 <Row>
                   <Col>{todo.title}</Col>
                   <Col>{todo.content}</Col>
-                  <Col>{todo.deadline ? todo.deadline.toLocaleDateString(): null}</Col>
+                  <Col>{todo.deadline ? toJSTISOString(todo.deadline) : null}</Col>
                   <Col>
                     <Button onClick={() => handleComplete(todo.id)} variant="success" size="sm">完了</Button>
                     <Button onClick={() => handleDelete(todo.id)} variant="danger" size="sm">削除</Button>
@@ -237,7 +243,7 @@ export default function TodoApp() {
                   <Row>
                     <Col>{todo.title}</Col>
                     <Col>{todo.content}</Col>
-                    <Col>{todo.deadline ? todo.deadline.toLocaleDateString(): null}</Col>
+                    <Col>{todo.deadline ? toJSTISOString(todo.deadline) : null}</Col>
                     <Col>
                       <Button onClick={() => handleRebase(todo.id)} variant="info" size="sm">戻す</Button>
                     </Col>
