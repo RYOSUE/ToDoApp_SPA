@@ -7,7 +7,6 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-// import { todo } from "node:test";
 
 // Todo型を定義
 interface Todo {
@@ -24,7 +23,6 @@ export default function TodoApp() {
   const [todoDeadline, setTodoDeadline] = useState<Date>(new Date());
   const [incompleteTodos, setIncompleteTodos] = useState<Todo[]>([]);
   const [completeTodos, setCompleteTodos] = useState<Todo[]>([]);
-  // const [nextId, setNextId] = useState(1);
 
   // 初期データの取得
   useEffect(() => {
@@ -57,25 +55,6 @@ export default function TodoApp() {
     setTodoDeadline(new Date(e.target.value));
   };
 
-  // 登録ボタンのクリックを処理
-  // const handleAdd = () => {
-  //   if (!todoTitle.trim()) return;
-  //   setIncompleteTodos([
-  //     ...incompleteTodos,
-  //     {
-  //       id: nextId,
-  //       text: todoTitle,
-  //       content: todoContent,
-  //       completed: false,
-  //       deadline: todoDeadline,
-  //     },
-  //   ]);
-  //   // 入力フィールドのリセット
-  //   setNextId(nextId + 1);
-  //   setTodoTitle("");
-  //   setTodoContent("");
-  //   setTodoDeadline(new Date());
-  // };
   const handleAdd = async () => {
     if (!todoTitle.trim()) return;  // 空のToDoは登録しない
     await fetch('/api/todos', {
@@ -106,9 +85,6 @@ export default function TodoApp() {
   };
 
   // 削除ボタンのクリックを処理
-  // const handleDelete = (id: number) => {
-  //   setIncompleteTodos(incompleteTodos.filter((todo) => todo.id !== id));
-  // };
   const handleDelete = async (id: number) => {
     await fetch(`/api/todos/`, {
       method: 'DELETE',
@@ -130,15 +106,6 @@ export default function TodoApp() {
   };
 
   // 完了ボタンのクリックを処理
-  // const handleComplete = (id: number) => {
-  //   const todo = incompleteTodos.find((t) => t.id === id);
-  //   if (!todo) return;
-  //   setIncompleteTodos(incompleteTodos.filter((t) => t.id !== id));
-  //   setCompleteTodos([
-  //     ...completeTodos,
-  //     { ...todo, completed: true },
-  //   ]);
-  // };
   const handleComplete = async (id: number) => {
     const todo = incompleteTodos.find((t) => t.id === id);
     if (!todo) return;
@@ -164,12 +131,6 @@ export default function TodoApp() {
   };
 
   // 完了したToDoを未完了に戻す処理
-  // const handleRebase = (id: number) => {
-  //   const todo = completeTodos.find((t) => t.id === id);
-  //   if (!todo) return;
-  //   setCompleteTodos(completeTodos.filter((t) => t.id !== id));
-  //   setIncompleteTodos([...incompleteTodos, todo]);
-  // };
   const handleRebase = async (id: number) => {
     const todo = completeTodos.find((t) => t.id === id);
     if (!todo) return;
