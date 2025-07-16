@@ -7,6 +7,7 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import toJSTISOString from "@/components/ToJSTISOString";
 
 // Todo型を定義
 interface Todo {
@@ -15,12 +16,6 @@ interface Todo {
   content: string;
   completed: boolean;
   deadline: Date | null; // nullを許容
-}
-
-// JSTのYYYY-MM-DD文字列を返す関数
-function toJSTISOString(date: Date): string {
-  const jstDate = new Date(date.getTime() + 3600000 * 9);
-  return jstDate.toISOString().slice(0, 10);
 }
 
 export default function TodoApp() {
