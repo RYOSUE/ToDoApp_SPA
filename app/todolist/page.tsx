@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useState, ChangeEvent } from "react";
+import { useEffect, useState } from "react";
 import Container from 'react-bootstrap/Container';
-import FloatingLabel from 'react-bootstrap/FloatingLabel';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import {toJSTISOString} from "@/lib/utils";
+import Button from 'react-bootstrap/Button';
+import TodoForm from "@/components/TodoForm"; // 作成したコンポーネントをインポート
+import { toJSTISOString } from "@/lib/utils"; // utilsをインポート
 
 // Todo型を定義
 interface Todo {
@@ -19,61 +18,11 @@ interface Todo {
 }
 
 export default function TodoApp() {
-  const [todoTitle, setTodoTitle] = useState("");
-  const [todoContent, setTodoContent] = useState("");
-  const [todoDeadline, setTodoDeadline] = useState<Date>(new Date());
   const [incompleteTodos, setIncompleteTodos] = useState<Todo[]>([]);
   const [completeTodos, setCompleteTodos] = useState<Todo[]>([]);
 
-  // 初期データの取得
-  useEffect(() => {
-    const fetchTodos = async () => {
-      const res = await fetch('/api/todos');
-      const todos = await res.json();
-      const todoArray = Array.isArray(todos) ? todos : [];
-      const mappedTodos = todoArray.map((t: Todo) => ({
-        ...t,
-        deadline: t.deadline ? new Date(t.deadline) : null,
-      }));
-      setIncompleteTodos(mappedTodos.filter((t: Todo) => !t.completed));
-      setCompleteTodos(mappedTodos.filter((t: Todo) => t.completed));
-    };
-    fetchTodos();
-  }, []);
-
-  // 入力フィールドの変更を処理
-  const handleTextChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setTodoTitle(e.target.value);
-  };
-
-  // コンテンツ入力フィールドの変更を処理
-  const handleContentChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setTodoContent(e.target.value);
-  };
-
-  // 締め切りの変更を処理
-  const handleDeadlineChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setTodoDeadline(new Date(e.target.value));
-  };
-
-  const handleAdd = async () => {
-    if (!todoTitle.trim()) return;  // 空のToDoは登録しない
-    await fetch('/api/todos', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        title: todoTitle,
-        content: todoContent,
-        completed: false,
-        deadline: toJSTISOString(todoDeadline), // JSTで送信
-      }),
-    })
-    setTodoTitle("");
-    setTodoContent("");
-    setTodoDeadline(new Date());
-    // ToDoリストを再取得
+  // fetchTodos関数をuseEffectの外に定義して再利用
+  const fetchTodos = async () => {
     const res = await fetch('/api/todos');
     const todos = await res.json();
     const todoArray = Array.isArray(todos) ? todos : [];
@@ -83,6 +32,26 @@ export default function TodoApp() {
     }));
     setIncompleteTodos(mappedTodos.filter((t: Todo) => !t.completed));
     setCompleteTodos(mappedTodos.filter((t: Todo) => t.completed));
+  };
+
+  // 初期データの取得
+  useEffect(() => {
+    fetchTodos();
+  }, []);
+
+  const handleAdd = async (newTodo: { title: string; content: string; deadline: string }) => {
+    await fetch('/api/todos', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...newTodo,
+        completed: false,
+      }),
+    });
+    // ToDoリストを再取得
+    await fetchTodos();
   };
 
   // 削除ボタンのクリックを処理
@@ -162,36 +131,9 @@ export default function TodoApp() {
         <h1 className="mb-4">ToDoリスト</h1>
         <p className=" lead text-muted mb-4">以下の登録フォームから新しいToDoを追加してください</p>
         <hr />
-        <div>
-          <h3>登録フォーム</h3>
-          <FloatingLabel controlId="floatingInput" label="Todo" className="mb-3">
-            <Form.Control
-              type="text"
-              placeholder="Todo"
-              value={todoTitle}
-              onChange={handleTextChange}
-              required
-              autoFocus />
-          </FloatingLabel>
-          <FloatingLabel controlId="floatingTextarea" label="Content" className="mb-3">
-            <Form.Control
-              as="textarea"
-              placeholder="Content"
-              value={todoContent}
-              onChange={handleContentChange}
-              style={{ height: '100px' }}
-            />
-          </FloatingLabel>
-          <FloatingLabel controlId="floatingDate" label="Deadline" className="mb-3">
-            <Form.Control
-              type="date"
-              value={toJSTISOString(todoDeadline)}
-              onChange={handleDeadlineChange}
-            />
-          </FloatingLabel>
-          <Button variant="primary" onClick={handleAdd} className="mb-3">登録</Button>
-          <hr />
-        </div>
+        {/* フォーム部分をコンポーネントに置き換え */}
+        <TodoForm onAddTodo={handleAdd} />
+        
         <section className="incomplete-area mb-8">
           <p className="title font-bold mb-2">未完了のToDo</p>
           <Container className="text-center mb-3">
