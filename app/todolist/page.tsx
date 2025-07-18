@@ -2,10 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Button from 'react-bootstrap/Button';
 import TodoForm from "@/components/TodoForm"; // 作成したコンポーネントをインポート
+import TodoList from '@/components/TodoList'; // 新しくインポート
 import { toJSTISOString } from "@/lib/utils"; // utilsをインポート
 
 // Todo型を定義
@@ -131,65 +129,23 @@ export default function TodoApp() {
         <h1 className="mb-4">ToDoリスト</h1>
         <p className=" lead text-muted mb-4">以下の登録フォームから新しいToDoを追加してください</p>
         <hr />
-        {/* フォーム部分をコンポーネントに置き換え */}
         <TodoForm onAddTodo={handleAdd} />
-        
-        <section className="incomplete-area mb-8">
-          <p className="title font-bold mb-2">未完了のToDo</p>
-          <Container className="text-center mb-3">
-            <Row>
-              <Col>ToDo</Col>
-              <Col>内容</Col>
-              <Col>締切</Col>
-              <Col>操作ボタン</Col>
-            </Row>
-          </Container>
-        </section>
-        <ul className="space-y-2">
-          {incompleteTodos.map((todo) => (
-            <li key={todo.id}>
-              <Container className="text-center mb-2">
-                <Row>
-                  <Col>{todo.title}</Col>
-                  <Col>{todo.content}</Col>
-                  <Col>{todo.deadline ? toJSTISOString(todo.deadline) : null}</Col>
-                  <Col>
-                    <Button onClick={() => handleComplete(todo.id)} variant="success" size="sm">完了</Button>
-                    <Button onClick={() => handleDelete(todo.id)} variant="danger" size="sm">削除</Button>
-                  </Col>
-                </Row>
-              </Container>
-            </li>
-          ))}
-        </ul>
-        <section className="complete-area">
-          <hr />
-          <p className="title font-bold mb-2">完了したTodo</p>
-          <Container className="text-center mb-3">
-            <Row>
-              <Col>ToDo</Col>
-              <Col>内容</Col>
-              <Col>締切</Col>
-              <Col>操作ボタン</Col>
-            </Row>
-          </Container>
-          <ul className="space-y-2">
-            {completeTodos.map((todo) => (
-              <li key={todo.id}>
-                <Container className="text-center mb-2">
-                  <Row>
-                    <Col>{todo.title}</Col>
-                    <Col>{todo.content}</Col>
-                    <Col>{todo.deadline ? toJSTISOString(todo.deadline) : null}</Col>
-                    <Col>
-                      <Button onClick={() => handleRebase(todo.id)} variant="info" size="sm">戻す</Button>
-                    </Col>
-                  </Row>
-                </Container>
-              </li>
-            ))}
-          </ul>
-        </section>
+
+        {/* 未完了リストをコンポーネントに置き換え */}
+        <TodoList
+          title="未完了のToDo"
+          todos={incompleteTodos}
+          onComplete={handleComplete}
+          onDelete={handleDelete}
+        />
+
+        {/* 完了リストをコンポーネントに置き換え */}
+        <TodoList
+          title="完了したToDo"
+          todos={completeTodos}
+          onRebase={handleRebase}
+          onDelete={handleDelete}
+        />
       </Container>
     </>
   );
